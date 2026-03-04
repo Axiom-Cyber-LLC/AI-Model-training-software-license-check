@@ -1,0 +1,10 @@
+merge: sbom-code sbom-container
+	python3 merge_inventories.py $(MERGED) \
+		runtime $(CODE_SBOM) \
+		runtime $(CONT_SBOM) \
+		training $(INVDIR)/datasets.json \
+		training $(INVDIR)/models.json
+
+check: merge
+	python3 license_guard.py $(POLICY) $(MERGED) $(REPORT) --distribution-mode $(DIST) --exceptions $(EXCEPTIONS)
+	@echo "Wrote report: $(REPORT)"
