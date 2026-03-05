@@ -13,7 +13,50 @@ This directory contains a small, self-contained **license and usage compliance e
 The guard runs in CI and can also be used locally as a preflight check before training or shipping.
 
 ---
+- **Licensing:** We vet dependencies and datasets and record them in **`THIRD-PARTY.md`**. See **`docs/LICENSING.md`** for the policy and checklist. Run **`python3 check_licenses.py`** to validate licenses against the policy.
 
+### License check script (`scripts/check_licenses.py`)
+
+The script checks that dependencies and third-party references use licenses allowed by the project (permissive or explicitly allowed; strong copyleft and non-commercial are rejected for code incorporation). It does **not** call PyPI; it uses `requirements.txt` plus a built-in list and optional **`THIRD-PARTY.md`** table.
+
+**Run it (from repo root):**
+
+```bash
+python scripts/check_licenses.py
+```
+
+| Option | Description |
+|--------|-------------|
+| `--requirements PATH` | Path to requirements file (default: `requirements.txt`) |
+| `--third-party PATH` | Path to third-party manifest (default: `THIRD-PARTY.md`) |
+| `--allow-weak-copyleft` | Do not treat LGPL/MPL as problematic (e.g. when used as external tool only) |
+| `--strict` | Fail on unknown or non-permissive licenses (not just strong copyleft/NC) |
+| `-q`, `--quiet` | Only print errors and final summary |
+
+**Examples:**
+
+```bash
+# Default: check requirements.txt and THIRD-PARTY.md
+python scripts/check_licenses.py
+
+# Quiet (CI): only errors and pass/fail
+python scripts/check_licenses.py -q
+
+# Strict: fail on any unknown or weak-copyleft license
+python scripts/check_licenses.py --strict
+
+# Allow weak copyleft (e.g. Semgrep/LGPL as external tool)
+python scripts/check_licenses.py --allow-weak-copyleft
+```
+
+**Inputs:**
+
+- **`requirements.txt`** – Packages are matched against the script’s built-in `known_package_licenses`. Any package not listed there produces a *warning* (add it to **`THIRD-PARTY.md`** and to `known_package_licenses` in the script).
+- **`THIRD-PARTY.md`** – Markdown table with columns like Package/Source and License. Rows whose license column looks like a license (e.g. MIT, BSD, Apache, GPL) are parsed and checked. Strong copyleft is warned (external-tool-only); non-commercial is an error.
+
+**Exit codes:** `0` = pass, `1` = one or more errors (e.g. strong copyleft or non-commercial used in a way that violates policy). Warnings (unknown license, weak copyleft) do not change the exit code unless you use `--strict`.
+
+**Adding a new dependency:** (1) Add the package to **`THIRD-PARTY.md`** with its license. (2) Add the package name and license to the `known_package_licenses` dict in **`scripts/check_licenses.py`** (around line 228) so the script can classify it.
 ## Key components
 
 - `policy.yml`  
