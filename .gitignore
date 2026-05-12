@@ -1,0 +1,43 @@
+# macOS
+.DS_Store
+._*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build/dist
+build/
+dist/
+
+# Local scan outputs and logs
+scan-results/
+*.log
+*.tmp
+
+# Environment files (do not commit real secrets)
+.env
+.env.local
+
+# AI assistant config (proprietary lockdown)
+.claude/
+.cursor/
+.aider*
+.continue/
+.copilot/
+.tabnine/
+.junie/
+.qodo/
+.proxyai/
+.ai/
+.zencoder/
+.minion/
+.ash/
+.mcpower/
